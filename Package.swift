@@ -20,9 +20,6 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "RoomPlan.JsonExport",
-            dependencies: []),
-        .testTarget(
-            name: "RoomPlan.JsonExportTests",
-            dependencies: ["RoomPlan.JsonExport"]),
+            dependencies: [])
     ]
 )
