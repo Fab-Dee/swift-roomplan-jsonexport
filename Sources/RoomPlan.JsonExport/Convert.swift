@@ -16,6 +16,8 @@ fileprivate struct CurveModel : Encodable {
     let radius: Float
 }
 
+fileprivate typealias EdgesModel = [Bool]
+
 fileprivate class GenericSurfaceModel : Encodable {
     let category: String
     let id: String
@@ -23,15 +25,18 @@ fileprivate class GenericSurfaceModel : Encodable {
     let scale: V3Model
     let transform: MatrixModel
     let curve: CurveModel?
+    let edges: EdgesModel
     
     init(_ category: String, _ id: String, _ confidence: String,
-         _ scale: V3Model, _ transform: MatrixModel, _ curve: CurveModel?) {
+         _ scale: V3Model, _ transform: MatrixModel, _ curve: CurveModel?,
+         _ edges: EdgesModel) {
         self.category = category
         self.id = id
         self.confidence = confidence
         self.scale = scale
         self.transform = transform
         self.curve = curve
+        self.edges = edges
     }
 }
 
@@ -72,15 +77,26 @@ fileprivate func toModel (_ curve: CapturedRoom.Surface.Curve) -> CurveModel {
                radius: curve.radius)
 }
 
+fileprivate func toModel (_ edges: Set<CapturedRoom.Surface.Edge>) -> EdgesModel {
+    [
+        edges.contains(.top),
+        edges.contains(.right),
+        edges.contains(.bottom),
+        edges.contains(.left)
+    ]
+}
+
 fileprivate func toModel(_ surface: CapturedRoom.Surface) -> GenericSurfaceModel {
     let id = toModel(surface.identifier)
     let confidence = toModel(surface.confidence)
     let scale = toModel(surface.dimensions)
     let transform = toModel(surface.transform)
     let curve = surface.curve != nil ? toModel(surface.curve!) : nil
+    let edges = toModel(surface.completedEdges)
     
     func makeGeneric(of category: String) -> GenericSurfaceModel {
-        GenericSurfaceModel(category, id, confidence, scale, transform, curve)
+        GenericSurfaceModel(category, id, confidence, scale,
+                            transform, curve, edges)
     }
     
     switch surface.category {
