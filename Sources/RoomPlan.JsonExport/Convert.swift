@@ -68,11 +68,13 @@ fileprivate class GenericObjectModel : Encodable {
     let category: String
     let confidence: String
     let scale: V3Model
+    let transform: MatrixModel
     
-    init(_ category: String, _ confidence: String, _ scale: V3Model) {
+    init(_ category: String, _ confidence: String, _ scale: V3Model, _ transform: MatrixModel) {
         self.category = category
         self.confidence = confidence
         self.scale = scale
+        self.transform = transform
     }
     
 }
@@ -159,9 +161,10 @@ fileprivate func toModle (_ obj: CapturedRoom.Object) -> GenericObjectModel {
     
     let confidence = toModel(obj.confidence)
     let scale = toModel(obj.dimensions)
+    let transform = toModel(obj.transform)
     
     func makeGeneric(of category: String) -> GenericObjectModel {
-        GenericObjectModel(category, confidence, scale)
+        GenericObjectModel(category, confidence, scale, transform)
     }
     
     switch obj.category {
