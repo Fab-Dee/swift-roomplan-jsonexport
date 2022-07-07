@@ -10,20 +10,28 @@ fileprivate struct V3Model : Encodable {
 
 fileprivate typealias MatrixModel = [Float]
 
+fileprivate struct CurveModel : Encodable {
+    let startAngle: Double
+    let endAngle: Double
+    let radius: Float
+}
+
 fileprivate class GenericSurfaceModel : Encodable {
     let category: String
     let id: String
     let confidence: String
     let scale: V3Model
     let transform: MatrixModel
+    let curve: CurveModel?
     
     init(_ category: String, _ id: String, _ confidence: String,
-         _ scale: V3Model, _ transform: MatrixModel) {
+         _ scale: V3Model, _ transform: MatrixModel, _ curve: CurveModel?) {
         self.category = category
         self.id = id
         self.confidence = confidence
         self.scale = scale
         self.transform = transform
+        self.curve = curve
     }
 }
 
@@ -58,14 +66,21 @@ fileprivate func toModel (_ matrix: simd_float4x4) -> MatrixModel {
     ]
 }
 
+fileprivate func toModel (_ curve: CapturedRoom.Surface.Curve) -> CurveModel {
+    CurveModel(startAngle: curve.startAngle.value,
+               endAngle: curve.endAngle.value,
+               radius: curve.radius)
+}
+
 fileprivate func toModel(_ surface: CapturedRoom.Surface) -> GenericSurfaceModel {
     let id = toModel(surface.identifier)
     let confidence = toModel(surface.confidence)
     let scale = toModel(surface.dimensions)
     let transform = toModel(surface.transform)
+    let curve = surface.curve != nil ? toModel(surface.curve!) : nil
     
     func makeGeneric(of category: String) -> GenericSurfaceModel {
-        GenericSurfaceModel(category, id, confidence, scale, transform)
+        GenericSurfaceModel(category, id, confidence, scale, transform, curve)
     }
     
     switch surface.category {
