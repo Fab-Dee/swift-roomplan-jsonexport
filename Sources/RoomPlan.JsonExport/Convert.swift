@@ -40,6 +40,29 @@ fileprivate class GenericSurfaceModel : Encodable {
     }
 }
 
+fileprivate class DoorModel : GenericSurfaceModel {
+    
+    let isOpen: Bool
+    
+    init(_ id: String, _ confidence: String,
+         _ scale: V3Model, _ transform: MatrixModel, _ curve: CurveModel?,
+         _ edges: EdgesModel, _ isOpen: Bool) {
+        self.isOpen = isOpen
+        super.init("door", id, confidence, scale, transform, curve, edges)
+    }
+    
+    private enum CodingKeys : String, CodingKey {
+        case isOpen
+    }
+    
+    override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(isOpen, forKey: .isOpen)
+    }
+    
+}
+
 fileprivate struct RoomModel : Encodable {
     let surfaces: [GenericSurfaceModel]
 }
@@ -99,9 +122,13 @@ fileprivate func toModel(_ surface: CapturedRoom.Surface) -> GenericSurfaceModel
                             transform, curve, edges)
     }
     
+    func makeDoor(isOpen: Bool) -> DoorModel {
+        DoorModel(id, confidence, scale, transform, curve, edges, isOpen)
+    }
+    
     switch surface.category {
-    case .door:
-        return makeGeneric(of: "door")
+    case .door(isOpen: let isOpen):
+        return makeDoor(isOpen: isOpen)
     case .opening:
         return makeGeneric(of: "opening")
     case .wall:
