@@ -1,15 +1,24 @@
 import Foundation
 import RoomPlan
+import simd
+
+fileprivate struct V3Model : Encodable {
+    let x: Float
+    let y: Float
+    let z: Float
+}
 
 fileprivate class GenericSurfaceModel : Encodable {
     let category: String
     let id: String
     let confidence: String
+    let scale: V3Model
     
-    init(_ category: String, _ id: String, _ confidence: String) {
+    init(_ category: String, _ id: String, _ confidence: String, _ scale: V3Model) {
         self.category = category
         self.id = id
         self.confidence = confidence
+        self.scale = scale
     }
 }
 
@@ -30,20 +39,26 @@ fileprivate func toModel(_ confidence: CapturedRoom.Confidence) -> String {
     }
 }
 
+fileprivate func toModel (_ v3: simd_float3) -> V3Model {
+    V3Model(x: v3.x, y: v3.y, z: v3.z)
+}
+
 fileprivate func toModel(_ surface: CapturedRoom.Surface) -> GenericSurfaceModel {
     let id = toModel(surface.identifier)
     let confidence = toModel(surface.confidence)
+    let scale = toModel(surface.dimensions)
+    
     switch surface.category {
     case .door:
-        return GenericSurfaceModel("door", id, confidence)
+        return GenericSurfaceModel("door", id, confidence, scale)
     case .opening:
-        return GenericSurfaceModel("opening", id, confidence)
+        return GenericSurfaceModel("opening", id, confidence, scale)
     case .wall:
-        return GenericSurfaceModel("wall", id, confidence)
+        return GenericSurfaceModel("wall", id, confidence, scale)
     case .window:
-        return GenericSurfaceModel("window", id, confidence)
+        return GenericSurfaceModel("window", id, confidence, scale)
     default:
-        return GenericSurfaceModel("unknown", id, confidence)
+        return GenericSurfaceModel("unknown", id, confidence, scale)
     }
 }
 
