@@ -64,17 +64,21 @@ fileprivate func toModel(_ surface: CapturedRoom.Surface) -> GenericSurfaceModel
     let scale = toModel(surface.dimensions)
     let transform = toModel(surface.transform)
     
+    func makeGeneric(of category: String) -> GenericSurfaceModel {
+        GenericSurfaceModel(category, id, confidence, scale, transform)
+    }
+    
     switch surface.category {
     case .door:
-        return GenericSurfaceModel("door", id, confidence, scale, transform)
+        return makeGeneric(of: "door")
     case .opening:
-        return GenericSurfaceModel("opening", id, confidence, scale, transform)
+        return makeGeneric(of: "opening")
     case .wall:
-        return GenericSurfaceModel("wall", id, confidence, scale, transform)
+        return makeGeneric(of: "wall")
     case .window:
-        return GenericSurfaceModel("window", id, confidence, scale, transform)
+        return makeGeneric(of: "window")
     default:
-        return GenericSurfaceModel("unknown", id, confidence, scale, transform)
+        return makeGeneric(of: "unknown")
     }
 }
 
