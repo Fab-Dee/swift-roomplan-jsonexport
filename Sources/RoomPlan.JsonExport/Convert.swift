@@ -66,9 +66,11 @@ fileprivate class DoorModel : GenericSurfaceModel {
 fileprivate class GenericObjectModel : Encodable {
     
     let category: String
+    let confidence: String
     
-    init(_ category: String) {
+    init(_ category: String, _ confidence: String) {
         self.category = category
+        self.confidence = confidence
     }
     
 }
@@ -153,8 +155,10 @@ fileprivate func toModel(_ surface: CapturedRoom.Surface) -> GenericSurfaceModel
 
 fileprivate func toModle (_ obj: CapturedRoom.Object) -> GenericObjectModel {
     
+    let confidence = toModel(obj.confidence)
+    
     func makeGeneric(of category: String) -> GenericObjectModel {
-        GenericObjectModel(category)
+        GenericObjectModel(category, confidence)
     }
     
     switch obj.category {
