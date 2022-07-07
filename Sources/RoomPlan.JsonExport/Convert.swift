@@ -3,16 +3,22 @@ import RoomPlan
 
 fileprivate class GenericSurfaceModel : Encodable {
     let category: String
+    let id: String
     let confidence: String
     
-    init(_ category: String, _ confidence: String) {
+    init(_ category: String, _ id: String, _ confidence: String) {
         self.category = category
+        self.id = id
         self.confidence = confidence
     }
 }
 
 fileprivate struct RoomModel : Encodable {
     let surfaces: [GenericSurfaceModel]
+}
+
+fileprivate func toModel (_ uuid: UUID) -> String {
+    uuid.uuidString
 }
 
 fileprivate func toModel(_ confidence: CapturedRoom.Confidence) -> String {
@@ -25,18 +31,19 @@ fileprivate func toModel(_ confidence: CapturedRoom.Confidence) -> String {
 }
 
 fileprivate func toModel(_ surface: CapturedRoom.Surface) -> GenericSurfaceModel {
+    let id = toModel(surface.identifier)
     let confidence = toModel(surface.confidence)
     switch surface.category {
     case .door:
-        return GenericSurfaceModel("door", confidence)
+        return GenericSurfaceModel("door", id, confidence)
     case .opening:
-        return GenericSurfaceModel("opening", confidence)
+        return GenericSurfaceModel("opening", id, confidence)
     case .wall:
-        return GenericSurfaceModel("wall", confidence)
+        return GenericSurfaceModel("wall", id, confidence)
     case .window:
-        return GenericSurfaceModel("window", confidence)
+        return GenericSurfaceModel("window", id, confidence)
     default:
-        return GenericSurfaceModel("unknown", confidence)
+        return GenericSurfaceModel("unknown", id, confidence)
     }
 }
 
