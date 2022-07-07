@@ -63,8 +63,19 @@ fileprivate class DoorModel : GenericSurfaceModel {
     
 }
 
+fileprivate class GenericObjectModel : Encodable {
+    
+    let category: String
+    
+    init(_ category: String) {
+        self.category = category
+    }
+    
+}
+
 fileprivate struct RoomModel : Encodable {
     let surfaces: [GenericSurfaceModel]
+    let objects: [GenericObjectModel]
 }
 
 fileprivate func toModel (_ uuid: UUID) -> String {
@@ -140,9 +151,38 @@ fileprivate func toModel(_ surface: CapturedRoom.Surface) -> GenericSurfaceModel
     }
 }
 
+fileprivate func toModle (_ obj: CapturedRoom.Object) -> GenericObjectModel {
+    
+    func makeGeneric(of category: String) -> GenericObjectModel {
+        GenericObjectModel(category)
+    }
+    
+    switch obj.category {
+    case .bathtub: return makeGeneric(of: "bathtub")
+    case .bed: return makeGeneric(of: "bed")
+    case .chair: return makeGeneric(of: "chair")
+    case .dishwasher: return makeGeneric(of: "dishwasher")
+    case .fireplace: return makeGeneric(of: "fireplace")
+    case .oven: return makeGeneric(of: "oven")
+    case .refrigerator: return makeGeneric(of: "refrigirator")
+    case .sink: return makeGeneric(of: "sink")
+    case .sofa: return makeGeneric(of: "sofa")
+    case .stairs: return makeGeneric(of: "stairs")
+    case .storage: return makeGeneric(of: "storage")
+    case .stove: return makeGeneric(of: "stove")
+    case .table: return makeGeneric(of: "table")
+    case .television: return makeGeneric(of: "television")
+    case .toilet: return makeGeneric(of: "toilet")
+    case .washerDryer: return makeGeneric(of: "washer/dryer")
+    default: return makeGeneric(of: "unknown")
+    }
+    
+}
+
 fileprivate func toModel(_ room: CapturedRoom) -> RoomModel {
     let allSurfaces = room.walls + room.doors + room.openings + room.windows
-    return RoomModel(surfaces: allSurfaces.map(toModel))
+    return RoomModel(surfaces: allSurfaces.map(toModel),
+                     objects: room.objects.map(toModle))
 }
 
 
