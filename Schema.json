@@ -101,15 +101,15 @@
               "startAngle": {
                 "type": "number",
                 "description": "The curves start-angle"
+              },
+              "endAngle": {
+                "type": "number",
+                "description": "The curves end-angle"
+              },
+              "radius": {
+                "type": "number",
+                "description": "The curves radius"
               }
-            },
-            "endAngle": {
-              "type": "number",
-              "description": "The curves end-angle"
-            },
-            "radius": {
-              "type": "number",
-              "description": "The curves radius"
             },
             "required": [
               "startAngle",
