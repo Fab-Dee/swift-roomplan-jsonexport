@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "CapturedRoom as Json",
+  "description": "The whole room",
+  "definitions": {
+    "id": {
+      "type": "string",
+      "description": "uuid identifier"
+    },
+    "confidence": {
+      "type": "string",
+      "description": "The confidence in the accuracy of this item",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "v3": {
+      "type": "object",
+      "description": "A 3D vector",
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "The vectors x component"
+        },
+        "y": {
+          "type": "number",
+          "description": "The vectors x component"
+        },
+        "z": {
+          "type": "number",
+          "description": "The vectors x component"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ]
+    },
+    "matrix": {
+      "type": "array",
+      "description": "A 4x4 matrix in the format c1.x, c1.y, c1.z, c1.w, c2.x, ...",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 16,
+      "maxItems": 16
+    }
+  },
+  "type": "object",
+  "properties": {
+    "surfaces": {
+      "description": "All surfaces in this room",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A single surface",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for this surface",
+            "$ref": "#/definitions/id"
+          },
+          "category": {
+            "type": "string",
+            "description": "The category of this surface",
+            "enum": [
+              "door",
+              "opening",
+              "wall",
+              "window",
+              "unknown"
+            ]
+          },
+          "confidence": {
+            "description": "The confidence in the accuracy of this surface",
+            "$ref": "#/definitions/confidence"
+          },
+          "scale": {
+            "description": "The surfaces size",
+            "$ref": "#/definitions/v3"
+          },
+          "transform": {
+            "description": "The surfaces location and rotation in space",
+            "$ref": "#/definitions/matrix"
+          },
+          "edges": {
+            "description": "Whether the surfaces edges are completed. Order: top, right, bottom, left",
+            "type": "array",
+            "items": {
+              "type": "boolean"
+            },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "curve": {
+            "description": "The surfaces curve",
+            "type": "object",
+            "properties": {
+              "startAngle": {
+                "type": "number",
+                "description": "The curves start-angle"
+              }
+            },
+            "endAngle": {
+              "type": "number",
+              "description": "The curves end-angle"
+            },
+            "radius": {
+              "type": "number",
+              "description": "The curves radius"
+            },
+            "required": [
+              "startAngle",
+              "endAngle",
+              "radius"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "confidence",
+          "scale",
+          "transform",
+          "edges"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "objects": {
+      "description": "All objects in this room",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A single object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for this object",
+            "$ref": "#/definitions/id"
+          },
+          "category": {
+            "type": "string",
+            "description": "This objects category",
+            "enum": [
+              "bathtub",
+              "bed",
+              "chair",
+              "dishwasher",
+              "fireplace",
+              "oven",
+              "refrigirator",
+              "sink",
+              "sofa",
+              "stairs",
+              "storage",
+              "stove",
+              "table",
+              "television",
+              "toilet",
+              "washer/dryer",
+              "unknown"
+            ]
+          },
+          "confidence": {
+            "description": "The confidence in the accuracy of this object",
+            "$ref": "#/definitions/confidence"
+          },
+          "scale": {
+            "description": "This objects size",
+            "$ref": "#/definitions/v3"
+          },
+          "transform": {
+            "description": "This objects transform",
+            "$ref": "#/definitions/matrix"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "confidence",
+          "scale",
+          "transform"
+        ]
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "surfaces",
+    "objects"
+  ]
+}
